@@ -23,13 +23,24 @@ def select_device(device_list):
     """
     Display the menu with device names and index numbers then prompt the user to select a device
     """
-    print("\nCurrectly online devices:\n")
-    for index, device in enumerate(device_list):
-        print(f"{index}. {device['name']}")
+    selected_device = None
 
-    selected_index = int(input("\nSelect a device by entering the index number: "))
-    # get the selected device
-    selected_device = device_list[selected_index]
+    while not selected_device:
+        try:
+            print("\nCurrectly online devices:\n")
+            for index, device in enumerate(device_list):
+                print(f"{index}. {device['name']}")
+
+            selected_index = int(
+                input("\nSelect a device by entering the index number: ")
+            )
+
+            # get the selected device
+            selected_device = device_list[selected_index]
+        except ValueError:
+            print("\nInvalid index number. Please select a valid index number.")
+        except IndexError:
+            print("\nIndex out of range. Please select a valid index number.")
 
     return selected_device
 
