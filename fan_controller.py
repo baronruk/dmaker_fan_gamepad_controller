@@ -139,7 +139,7 @@ class FanController(FanMiot):
 
         new_angle = supported_angles[current_angle_index - 1]
         self.set_angle(new_angle)
-        print(f"Angle increased. Current angle {new_angle}")
+        print(f"Angle decreased. Current angle {new_angle}")
 
     @power_required
     def toggle_mode(self):
