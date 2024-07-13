@@ -29,10 +29,10 @@ def select_device(device_list):
         try:
             print("\nCurrectly online devices:\n")
             for index, device in enumerate(device_list):
-                print(f"{index}. {device['name']}")
+                print(f"{index + 1}. {device['name']}")
 
-            selected_index = int(
-                input("\nSelect a device by entering the index number: ")
+            selected_index = (
+                int(input("\nSelect a device by entering the index number: ")) - 1
             )
 
             # get the selected device
