@@ -1,3 +1,4 @@
+from colorama import Fore, Style
 from miio import FanMiot
 from miio.fan_common import MoveDirection
 from miio.integrations.fan.dmaker.fan_miot import SUPPORTED_ANGLES, OperationModeMiot
@@ -20,21 +21,30 @@ class FanController(FanMiot):
             self.off()
         else:
             self.on()
-        print(f"Power: {self.status().power.upper()}")
+        print(
+            f"{Fore.GREEN}Power: {Style.BRIGHT}{self.status().power.upper()}"
+            f"{Style.RESET_ALL}"
+        )
 
     def toggle_buzzer(self):
         if self.status().buzzer:
             self.set_buzzer(False)
         else:
             self.set_buzzer(True)
-        print(f"Buzzer: {_convert_bool(self.status().buzzer)}")
+        print(
+            f"{Fore.GREEN}Buzzer: {Style.BRIGHT}{_convert_bool(self.status().buzzer)}"
+            f"{Style.RESET_ALL}"
+        )
 
     def toggle_child_lock(self):
         if self.status().child_lock:
             self.set_child_lock(False)
         else:
             self.set_child_lock(True)
-        print(f"Child lock: {_convert_bool(self.status().child_lock)}")
+        print(
+            f"{Fore.GREEN}Child lock: {Style.BRIGHT}{_convert_bool(self.status().child_lock)}"
+            f"{Style.RESET_ALL}"
+        )
 
     @power_required
     def toggle_led_indicators(self):
@@ -42,7 +52,10 @@ class FanController(FanMiot):
             self.set_led(False)
         else:
             self.set_led(True)
-        print(f"LED indicators: {_convert_bool(self.status().led)}")
+        print(
+            f"{Fore.GREEN}LED indicators: {Style.BRIGHT}{_convert_bool(self.status().led)}"
+            f"{Style.RESET_ALL}"
+        )
 
     @power_required
     def toggle_oscillation(self):
@@ -50,7 +63,10 @@ class FanController(FanMiot):
             self.set_oscillate(False)
         else:
             self.set_oscillate(True)
-        print(f"Oscillation: {_convert_bool(self.status().oscillate)}")
+        print(
+            f"{Fore.GREEN}Oscillation: {Style.BRIGHT}{_convert_bool(self.status().oscillate)}"
+            f"{Style.RESET_ALL}"
+        )
 
     @power_required
     def decrease_speed(self):
@@ -58,9 +74,16 @@ class FanController(FanMiot):
 
         if current_speed > 1:
             self.set_speed(current_speed - 1)
-            print(f"Speed decreased. Current speed: {self.status().speed}")
+            print(
+                f"{Fore.GREEN}Speed decreased. {Style.BRIGHT}Current speed: {self.status().speed}"
+                f"{Style.RESET_ALL}"
+            )
         else:
-            print(f"Minimum speed reached. Current speed: {current_speed}")
+            print(
+                f"{Fore.YELLOW}Minimum speed reached."
+                f"{Fore.GREEN}{Style.BRIGHT}Current speed: {current_speed}"
+                f"{Style.RESET_ALL}"
+            )
 
     @power_required
     def increase_speed(self):
@@ -68,45 +91,70 @@ class FanController(FanMiot):
 
         if current_speed < 100:
             self.set_speed(current_speed + 1)
-            print(f"Speed increased. Current speed: {self.status().speed}")
+            print(
+                f"{Fore.GREEN}Speed increased. {Style.BRIGHT}Current speed: {self.status().speed}"
+                f"{Style.RESET_ALL}"
+            )
         else:
-            print(f"Maximum speed reached. Current speed: {current_speed}")
+            print(
+                f"{Fore.YELLOW}Maximum speed reached."
+                f"{Fore.GREEN}{Style.BRIGHT} Current speed: {current_speed}"
+                f"{Style.RESET_ALL}"
+            )
 
     @power_required
     def rotate_left(self):
         if self.status().oscillate:
-            print("Cannot rotate while oscillation is ON")
+            print(
+                f"{Fore.RED}Cannot rotate while oscillation is {Style.BRIGHT}ON{Style.RESET_ALL}"
+            )
         else:
             self.set_rotate(MoveDirection.Left)
-            print("Rotated to the left.")
+            print(f"{Fore.GREEN}Rotated to the left.")
 
     @power_required
     def rotate_right(self):
         if self.status().oscillate:
-            print("Cannot rotate while oscillation is ON")
+            print(
+                f"{Fore.RED}Cannot rotate while oscillation is {Style.BRIGHT}ON{Style.RESET_ALL}"
+            )
         else:
             self.set_rotate(MoveDirection.Right)
-            print("Rotated to the right.")
+            print(f"{Fore.GREEN}Rotated to the right.")
 
     def print_status(self):
         status = self.status()
         print(
-            "\nDevice status\n"
-            f"Power: {status.power.upper()}\n"
-            f"Operation mode: {status.mode.value.upper()}\n"
-            f"Speed: {status.speed}\n"
-            f"Oscillation: {_convert_bool(status.oscillate)}\n"
-            f"Angle: {status.angle}\n"
-            f"LED: {_convert_bool(status.led)}\n"
-            f"Buzzer: {_convert_bool(status.buzzer)}\n"
-            f"Child lock: {_convert_bool(status.child_lock)}\n"
-            f"Power-off time (minutes): {status.delay_off_countdown or 'UNSET'}\n",
+            f"\n{Fore.BLUE}{Style.BRIGHT}Device status\n"
+            f"{Style.RESET_ALL}"
+            f"{Fore.GREEN}Power: {Style.BRIGHT}{status.power.upper()}\n"
+            f"{Style.RESET_ALL}"
+            f"{Fore.GREEN}Operation mode: {Style.BRIGHT}{status.mode.value.upper()}\n"
+            f"{Style.RESET_ALL}"
+            f"{Fore.GREEN}Speed: {Style.BRIGHT}{status.speed}\n"
+            f"{Style.RESET_ALL}"
+            f"{Fore.GREEN}Oscillation: {Style.BRIGHT}{_convert_bool(status.oscillate)}\n"
+            f"{Style.RESET_ALL}"
+            f"{Fore.GREEN}Angle: {Style.BRIGHT}{status.angle}\n"
+            f"{Style.RESET_ALL}"
+            f"{Fore.GREEN}LED: {Style.BRIGHT}{_convert_bool(status.led)}\n"
+            f"{Style.RESET_ALL}"
+            f"{Fore.GREEN}Buzzer: {Style.BRIGHT}{_convert_bool(status.buzzer)}\n"
+            f"{Style.RESET_ALL}"
+            f"{Fore.GREEN}Child lock: {Style.BRIGHT}{_convert_bool(status.child_lock)}\n"
+            f"{Style.RESET_ALL}"
+            f"{Fore.GREEN}Power-off time (minutes): "
+            f"{Style.BRIGHT}{status.delay_off_countdown or 'UNSET'}\n"
+            f"{Style.RESET_ALL}",
         )
 
     @power_required
     def increase_angle(self):
         if not self.status().oscillate:
-            print("Cannot adjust the angle while oscillation is OFF")
+            print(
+                f"{Fore.RED}Cannot adjust the angle while oscillation is {Style.BRIGHT}OFF"
+                f"{Style.RESET_ALL}"
+            )
             return
 
         supported_angles = SUPPORTED_ANGLES[self.model]
@@ -114,13 +162,19 @@ class FanController(FanMiot):
 
         if current_angle_index + 1 >= len(supported_angles):
             print(
-                f"Maximum angle reached. Current angle: {supported_angles[current_angle_index]}"
+                f"{Fore.YELLOW}Maximum angle reached. "
+                f"{Fore.GREEN}{Style.BRIGHT}Current angle: "
+                f"{supported_angles[current_angle_index]}"
+                f"{Style.RESET_ALL}"
             )
             return
 
         new_angle = supported_angles[current_angle_index + 1]
         self.set_angle(new_angle)
-        print(f"Angle increased. Current angle: {new_angle}")
+        print(
+            f"{Fore.GREEN}Angle increased. {Style.BRIGHT}Current angle: {new_angle}"
+            f"{Style.RESET_ALL}"
+        )
 
     @power_required
     def decrease_angle(self):
@@ -133,13 +187,19 @@ class FanController(FanMiot):
 
         if current_angle_index - 1 < 0:
             print(
-                f"Minimum angle reached. Current angle: {supported_angles[current_angle_index]}"
+                f"{Fore.YELLOW}Minimum angle reached. "
+                f"{Fore.GREEN}{Style.BRIGHT}Current angle: "
+                f"{supported_angles[current_angle_index]}"
+                f"{Style.RESET_ALL}"
             )
             return
 
         new_angle = supported_angles[current_angle_index - 1]
         self.set_angle(new_angle)
-        print(f"Angle decreased. Current angle {new_angle}")
+        print(
+            f"{Fore.GREEN}Angle decreased. {Style.BRIGHT}Current angle: {new_angle}"
+            f"{Style.RESET_ALL}"
+        )
 
     @power_required
     def toggle_mode(self):
@@ -152,7 +212,8 @@ class FanController(FanMiot):
 
         self.set_mode(next_mode)
         print(
-            f"Previous mode: {current_mode.name.upper()}"
-            " --> "
-            f"Switched to: {self.status().mode.value.upper()}"
+            f"{Fore.RED}Previous mode: {Style.BRIGHT}{current_mode.name.upper()}"
+            f"{Fore.RESET}{Style.RESET_ALL}"
+            f" --> {Fore.GREEN}Switched to: {Style.BRIGHT}{self.status().mode.value.upper()}"
+            f"{Style.RESET_ALL}"
         )

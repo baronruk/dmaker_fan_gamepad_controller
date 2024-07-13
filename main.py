@@ -4,10 +4,14 @@ import time
 
 import pygame
 import toml
+from colorama import Fore, Style, init
 
 from device_manager import parse_device_list, select_device
 from fan_controller import FanController
 from login import micloud_login
+
+# initialize colorama
+init(autoreset=True)
 
 # initialize pygame
 pygame.init()
@@ -23,7 +27,7 @@ def _get_debug_setting():
     Defaults to False if the setting is not found or invalid.
     """
     if not os.path.exists(CONFIG_FILE):
-        print("\nConfiguration file not found. Defaulting to False.\n")
+        print(f"{Fore.YELLOW}\nConfiguration file not found. Defaulting to False.\n")
         return False
 
     with open(CONFIG_FILE, "r") as file:
@@ -32,14 +36,17 @@ def _get_debug_setting():
 
         if debug_setting is None:
             print(
-                "\nNo value for debug mode setting found in TOML file. Defaulting to False.\n"
+                f"{Fore.YELLOW}\nNo value for debug mode setting found in TOML file."
+                f"Defaulting to False.\n"
             )
             return False
 
         if isinstance(debug_setting, bool):
             return debug_setting
         else:
-            print("\nInvalid value for debug mode setting. Defaulting to False.\n")
+            print(
+                f"{Fore.YELLOW}\nInvalid value for debug mode setting. Defaulting to False.\n"
+            )
             return False
 
 
@@ -52,11 +59,11 @@ def _initialize_joystick():
         joystick = pygame.joystick.Joystick(0)
         joystick.init()
 
-        print(f" => Gamepad initialized: {joystick.get_name()}")
+        print(f"{Fore.GREEN} => Gamepad initialized: {joystick.get_name()}")
 
         return joystick
     else:
-        print(" => No gamepad connected.")
+        print(f"{Fore.RED} => No gamepad connected.")
 
         return None
 
@@ -84,7 +91,7 @@ running = True
 while running:
     if not pygame.joystick.get_count() and joystick is not None:
         # gamepad was disconnected
-        print(" => Gamepad disconnected.")
+        print(f"{Fore.RED} => Gamepad disconnected.")
         joystick = None
 
     if pygame.joystick.get_count() and joystick is None:
@@ -97,7 +104,9 @@ while running:
                 button = event.button
 
                 if DEBUG_MODE:
-                    print(f" => Gamepad button: {button}")
+                    print(
+                        f"{Fore.CYAN}{Style.DIM} => Gamepad button: {button}{Style.RESET_ALL}"
+                    )
 
                 if button == 0:  # A
                     fan.toggle_buzzer()
@@ -134,7 +143,10 @@ while running:
                 value = event.value
 
                 if DEBUG_MODE:
-                    print(f" => Gamepad axis {axis} moved to {value:.2f}")
+                    print(
+                        f"{Style.DIM}{Fore.CYAN} => Gamepad axis {axis} moved to {value:.2f}"
+                        f"{Style.RESET_ALL}"
+                    )
 
                 if axis == 3:
                     if value <= -1:
