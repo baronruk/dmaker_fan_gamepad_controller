@@ -1,7 +1,9 @@
+import os
 import sys
 import time
 
 import pygame
+import toml
 
 from device_manager import parse_device_list, select_device
 from fan_controller import FanController
@@ -10,6 +12,35 @@ from login import micloud_login
 # initialize pygame
 pygame.init()
 pygame.joystick.init()
+
+
+CONFIG_FILE = "config.toml"
+
+
+def _get_debug_setting():
+    """
+    Retrieves the debug setting from the configuration file.
+    Defaults to False if the setting is not found or invalid.
+    """
+    if not os.path.exists(CONFIG_FILE):
+        print("\nConfiguration file not found. Defaulting to False.\n")
+        return False
+
+    with open(CONFIG_FILE, "r") as file:
+        config = toml.load(file)
+        debug_setting = config.get("general", {}).get("debug")
+
+        if debug_setting is None:
+            print(
+                "\nNo value for debug mode setting found in TOML file. Defaulting to False.\n"
+            )
+            return False
+
+        if isinstance(debug_setting, bool):
+            return debug_setting
+        else:
+            print("\nInvalid value for debug mode setting. Defaulting to False.\n")
+            return False
 
 
 def _initialize_joystick():
@@ -29,6 +60,8 @@ def _initialize_joystick():
 
         return None
 
+
+DEBUG_MODE = _get_debug_setting()
 
 # login to MiCloud and retrieve the list of online devices
 session = micloud_login()
@@ -63,7 +96,8 @@ while running:
             if event.type == pygame.JOYBUTTONDOWN:
                 button = event.button
 
-                print(f" => Gamepad button: {button}")
+                if DEBUG_MODE:
+                    print(f" => Gamepad button: {button}")
 
                 if button == 0:  # A
                     fan.toggle_buzzer()
@@ -99,7 +133,8 @@ while running:
                 axis = event.axis
                 value = event.value
 
-                print(f" => Gamepad axis {axis} moved to {value:.2f}")
+                if DEBUG_MODE:
+                    print(f" => Gamepad axis {axis} moved to {value:.2f}")
 
                 if axis == 3:
                     if value <= -1:
