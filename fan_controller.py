@@ -13,6 +13,7 @@ class FanController(FanMiot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.operation_modes = [mode.name.lower() for mode in OperationModeMiot]
+        self.print_status()
 
     def toggle_power(self):
         if self.status().is_on:
