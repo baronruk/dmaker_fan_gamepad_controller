@@ -3,6 +3,7 @@ black==24.4.2
 flake8==7.1.0
 isort==5.13.2
 micloud==0.6
+pygame==2.6.0
 python-miio==0.5.12
 toml==0.10.2
 watchdog==4.0.1
