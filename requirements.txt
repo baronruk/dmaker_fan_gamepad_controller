@@ -1,5 +1,6 @@
 # explicit requirements
 black==24.4.2
+cryptography==42.0.8
 flake8==7.1.0
 isort==5.13.2
 micloud==0.6
@@ -18,7 +19,6 @@ charset-normalizer==3.3.2
 click==8.1.7
 construct==2.10.70
 croniter==2.0.5
-cryptography==42.0.8
 defusedxml==0.7.1
 idna==3.7
 ifaddr==0.2.0
