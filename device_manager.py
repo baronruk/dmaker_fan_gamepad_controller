@@ -1,4 +1,4 @@
-import pprint
+import json
 
 from login import micloud_login
 
@@ -65,5 +65,4 @@ if __name__ == "__main__":
 
     # print the full information of the selected device
     print("\nSelected Device Full Information:")
-    pp = pprint.PrettyPrinter(indent=4)
-    pp.pprint(full_device_info)
+    print(f"\n{json.dumps(full_device_info, indent=4, sort_keys=True)}")
