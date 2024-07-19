@@ -25,6 +25,24 @@ def _load_credentials():
     return username, password
 
 
+def _save_credentials(username, password):
+    # function to save credentials to configuration TOML file
+
+    config = {}
+
+    if os.path.exists(CONFIG_FILE):
+        with open(CONFIG_FILE, "r") as file:
+            config = toml.load(file)
+
+    # update credentials in the config dictionary
+    config.setdefault("credentials", {})["username"] = username
+    config.setdefault("credentials", {})["password"] = password
+
+    # write updated config back to the file
+    with open(CONFIG_FILE, "w") as file:
+        toml.dump(config, file)
+
+
 def micloud_login():
     saved_credentials = True
     # load credentials
@@ -42,7 +60,7 @@ def micloud_login():
             password = getpass.getpass("Password: ")
         saved_credentials = False
 
-    # log in to MiCloud and retrieve the device list
+    # log in to MiCloud
     mc = MiCloud(username, password)
     try:
         login_success = mc.login()
@@ -52,9 +70,6 @@ def micloud_login():
 
     # write credentials to the TOML file only if login was successful
     if login_success and not saved_credentials:
-        with open(CONFIG_FILE, "w") as file:
-            toml.dump(
-                {"credentials": {"username": username, "password": password}}, file
-            )
+        _save_credentials(username, password)
 
-    return mc or None
+    return mc if login_success else None
