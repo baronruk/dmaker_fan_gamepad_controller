@@ -1,8 +1,10 @@
 import getpass
 import os
+import sys
 
 import toml
 from micloud import MiCloud
+from micloud.micloudexception import MiCloudAccessDenied
 
 # define the path to the configuration file
 CONFIG_FILE = "config.toml"
@@ -35,14 +37,18 @@ def micloud_login():
         )
 
         if not username:
-            username = input("Enter your username: ")
+            username = input("Username: ")
         if not password:
-            password = getpass.getpass("Enter your password: ")
+            password = getpass.getpass("Password: ")
         saved_credentials = False
 
     # log in to MiCloud and retrieve the device list
     mc = MiCloud(username, password)
-    login_success = mc.login()
+    try:
+        login_success = mc.login()
+    except MiCloudAccessDenied:
+        print("Access denied. Did you set the correct username and/or password?")
+        sys.exit(0)
 
     # write credentials to the TOML file only if login was successful
     if login_success and not saved_credentials:
