@@ -3,13 +3,15 @@ import os
 
 from cryptography.fernet import Fernet
 
+from ..helpers import get_absolute_path
+
 # define the path to the key file
-KEY_FILE = ".key"
+KEY_FILE = "../../.key"
 
 
 class PasswordCipher:
     def __init__(self, key_file=KEY_FILE):
-        self.key_file = key_file
+        self.key_file = get_absolute_path(KEY_FILE)
         self.key = self._load_key()
 
     def _generate_key(self):

@@ -6,10 +6,11 @@ import toml
 from micloud import MiCloud
 from micloud.micloudexception import MiCloudAccessDenied
 
-from password_cipher import PasswordCipher
+from ..helpers import get_absolute_path
+from .password_cipher import PasswordCipher
 
 # define the path to the configuration file
-CONFIG_FILE = "config.toml"
+CONFIG_FILE = get_absolute_path("../../config.toml")
 
 
 def _load_credentials(password_cipher):

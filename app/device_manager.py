@@ -1,6 +1,6 @@
 import json
 
-from login import micloud_login
+from .auth.login import micloud_login
 
 
 def parse_device_list(devices):
@@ -52,7 +52,7 @@ def _find_device_by_token(device_list, token):
     return None
 
 
-if __name__ == "__main__":
+def list_devices():
     session = micloud_login()
     device_list = session.get_devices()
 

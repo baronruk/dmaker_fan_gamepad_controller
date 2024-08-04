@@ -2,7 +2,7 @@ from miio import FanMiot
 from miio.fan_common import MoveDirection
 from miio.integrations.fan.dmaker.fan_miot import SUPPORTED_ANGLES, OperationModeMiot
 
-from decorators import power_required
+from .decorators import power_required
 
 
 def _convert_bool(boolean):
