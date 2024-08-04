@@ -6,6 +6,7 @@ import sys
 
 if __name__ == "__main__":
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), "app"))
+    os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 
     from app.main import main  # isort:skip noqa
     from app.device_manager import list_devices  # isort:skip noqa
