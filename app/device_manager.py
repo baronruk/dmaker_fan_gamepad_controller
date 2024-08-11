@@ -1,6 +1,6 @@
 import json
 
-from .auth.login import micloud_login
+from .auth.login import Authenticator
 
 
 def parse_device_list(devices):
@@ -53,7 +53,7 @@ def _find_device_by_token(device_list, token):
 
 
 def list_devices():
-    session = micloud_login()
+    session = Authenticator().login()
     device_list = session.get_devices()
 
     # parse the device list
