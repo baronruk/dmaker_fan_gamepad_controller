@@ -5,7 +5,7 @@ import time
 import pygame
 import toml
 
-from .auth.login import micloud_login
+from .auth.login import Authenticator
 from .device_manager import parse_device_list, select_device
 from .fan_controller import FanController
 from .helpers import get_absolute_path
@@ -66,7 +66,7 @@ def main():
     DEBUG_MODE = _get_debug_setting()
 
     # login to MiCloud and retrieve the list of online devices
-    session = micloud_login()
+    session = Authenticator().login()
     device_list = session.get_devices()
 
     # parse the device list and select device

@@ -13,81 +13,83 @@ from .password_cipher import PasswordCipher
 CONFIG_FILE = get_absolute_path("../../config.toml")
 
 
-def _load_credentials(password_cipher):
-    # function to load credentials from configuration TOML file
+class Authenticator:
+    def __init__(self, config_file=None):
+        self.config_file = config_file or CONFIG_FILE
+        self.password = None
+        self.password_cipher = PasswordCipher()
+        self.saved_credentials = True
+        self.username = None
 
-    username = None
-    password = None
+    def _load_credentials(self):
+        # function to load credentials from configuration TOML file
 
-    if os.path.exists(CONFIG_FILE):
-        with open(CONFIG_FILE, "r") as file:
-            config = toml.load(file)
-            username = config.get("credentials", {}).get("username")
-            password = config.get("credentials", {}).get("password")
+        if os.path.exists(self.config_file):
+            with open(self.config_file, "r") as file:
+                config = toml.load(file)
+                self.username = config.get("credentials", {}).get("username")
+                self.password = config.get("credentials", {}).get("password")
 
-            # decrypt password if it is not None
-            if password:
-                try:
-                    password = password_cipher.decrypt_password(password)
-                except Exception:
-                    # if decryption fails, encrypt the password
-                    password = password_cipher.encrypt_password(password)
-                    _save_credentials(username, password, password_cipher)
-                    password = password_cipher.decrypt_password(password)
+                # decrypt password if it is not None
+                if self.password:
+                    try:
+                        self.password = self.password_cipher.decrypt_password(
+                            self.password
+                        )
+                    except Exception as exception:
+                        print(f"Failed to decrypt the password: {exception}")
+                        sys.exit(1)
 
-    return username, password
+    def _save_credentials(self):
 
+        # function to save credentials to configuration TOML file
+        config = {}
 
-def _save_credentials(username, password, password_cipher):
-    # function to save credentials to configuration TOML file
+        if os.path.exists(self.config_file):
+            with open(self.config_file, "r") as file:
+                config = toml.load(file)
 
-    config = {}
+        # encrypt the password before saving
+        encrypted_password = self.password_cipher.encrypt_password(self.password)
 
-    if os.path.exists(CONFIG_FILE):
-        with open(CONFIG_FILE, "r") as file:
-            config = toml.load(file)
+        # update credentials in the config dictionary
+        config.setdefault("credentials", {})["username"] = self.username
+        config.setdefault("credentials", {})["password"] = encrypted_password
 
-    # encrypt the password before saving
-    encrypted_password = password_cipher.encrypt_password(password)
+        # write updated config back to the file
+        with open(self.config_file, "w") as file:
+            toml.dump(config, file)
 
-    # update credentials in the config dictionary
-    config.setdefault("credentials", {})["username"] = username
-    config.setdefault("credentials", {})["password"] = encrypted_password
+    def prompt_for_credentials(self):
+        # prompt the user for credentials
+        if not self.username:
+            self.username = input("Username: ")
+        if not self.password:
+            self.password = getpass.getpass("Password: ")
+        self.saved_credentials = False
 
-    # write updated config back to the file
-    with open(CONFIG_FILE, "w") as file:
-        toml.dump(config, file)
+    def login(self):
+        # load credentials
+        self._load_credentials()
 
+        # check if credentials are empty and prompt user if necessary
+        if not self.username or not self.password:
+            print(
+                "Username and/or password? not found in TOML file. "
+                "Please enter your MiCloud credentials."
+            )
+            self.prompt_for_credentials()
 
-def micloud_login():
-    saved_credentials = True
-    password_cipher = PasswordCipher()
+        # log in to MiCloud
+        mc = MiCloud(self.username, self.password)
+        try:
+            login_success = mc.login()
+        except MiCloudAccessDenied:
+            print("Access denied. Did you set the correct username and/or password?")
+            sys.exit(0)
 
-    # load credentials
-    username, password = _load_credentials(password_cipher)
+        # write credentials to the TOML file only if login was successful
+        if login_success and not self.saved_credentials:
+            self._save_credentials()
 
-    # check if credentials are empty and prompt user if necessary
-    if not username or not password:
-        print(
-            "Username or password not found in TOML file. Please enter your MiCloud credentials."
-        )
-
-        if not username:
-            username = input("Username: ")
-        if not password:
-            password = getpass.getpass("Password: ")
-        saved_credentials = False
-
-    # log in to MiCloud
-    mc = MiCloud(username, password)
-    try:
-        login_success = mc.login()
-    except MiCloudAccessDenied:
-        print("Access denied. Did you set the correct username and/or password?")
-        sys.exit(0)
-
-    # write credentials to the TOML file only if login was successful
-    if login_success and not saved_credentials:
-        _save_credentials(username, password, password_cipher)
-
-    return mc if login_success else None
+        return mc if login_success else None
